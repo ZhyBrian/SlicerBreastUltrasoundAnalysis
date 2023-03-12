@@ -6,7 +6,7 @@ This extension currently contains only one module, which has the same name as th
 
 ## Module: AI Assisted BUS Diagnosis
 
-<img src="./Screenshots/BUS_Diagnosis.png" alt="BUS_Diagnosis" style="zoom: 33%;"/>
+<img src="./Screenshots/BUS_Diagnosis_icon.png" alt="BUS_Diagnosis_icon"/>
 
 This module is designed to help physicians diagnose intramammary lesions based on breast ultrasound images with nodules. Based on the DICOM ultrasound image imported into 3D Slicer, this module can segment the nodule from the image and predict whether the nodule is malignant through its built-in AI algorithm.
 
