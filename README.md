@@ -1,10 +1,10 @@
-# AI Assisted BUS Diagnosis Extension for 3D Slicer
+# AI Breast US Diagnosis Extension for 3D Slicer
 
 This extension currently contains only one module, which has the same name as the extension name.
 
 
 
-## Module: AI Assisted BUS Diagnosis
+## Module: AI Breast US Diagnosis
 
 <img src="./BUS_Diagnosis.png" alt="BUS_Diagnosis"/>
 
