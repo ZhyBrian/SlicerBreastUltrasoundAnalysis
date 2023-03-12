@@ -8,7 +8,7 @@ set(EXTENSION_HOMEPAGE "https://github.com/ZhyBrian/SlicerAIAssistedBUSDiagnosis
 set(EXTENSION_CATEGORY "Utilities")
 set(EXTENSION_CONTRIBUTORS "Yi Zhang, Xiaojun Chen (Shanghai Jiao Tong University)")
 set(EXTENSION_DESCRIPTION "This module is designed to help physicians diagnose intramammary lesions based on breast ultrasound images with nodules.")
-set(EXTENSION_ICONURL "https://raw.githubusercontent.com/ZhyBrian/SlicerAIAssistedBUSDiagnosis/master/BUS_Diagnosis.png")
+set(EXTENSION_ICONURL "https://raw.githubusercontent.com/ZhyBrian/SlicerAIAssistedBUSDiagnosis/master/Screenshots/BUS_Diagnosis_icon.png")
 set(EXTENSION_SCREENSHOTURLS "https://raw.githubusercontent.com/ZhyBrian/SlicerAIAssistedBUSDiagnosis/master/Screenshots/overview.png")
 set(EXTENSION_DEPENDS "NA") # Specified as a list or "NA" if no dependencies
 
