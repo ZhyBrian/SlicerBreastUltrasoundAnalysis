@@ -61,8 +61,3 @@ Please restart 3D Slicer after installation to enable this module.
    ![saveResults](./Screenshots/saveResults.png)
 
 - If you checked "Segment All Slice Simultaneously" before clicking "AI Automatically Segment and Diagnose" button, all the slices in the red slice widget will be segmented simultaneously by AI algorithm. It may take several minutes to compute, and the function of classifying breast nodule and saving diagnosis results are unavailable in this mode.
-
-
-
-### Acknowledgments
-
