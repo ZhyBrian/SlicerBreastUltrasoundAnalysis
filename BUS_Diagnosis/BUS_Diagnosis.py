@@ -12,8 +12,6 @@ import math
 import qt
 import copy
 
-# slicer.util.pip_uninstall('torch')
-# slicer.util.pip_uninstall('torchvision')
 try:
   import cv2
   from PIL import Image
@@ -54,7 +52,7 @@ class BUS_Diagnosis(ScriptedLoadableModule):
 This module is designed to help physicians diagnose intramammary lesions based on breast ultrasound images with nodules. 
 Based on the DICOM ultrasound image imported into 3D Slicer, 
 this module can segment the nodule from the image and predict whether the nodule is malignant through its built-in AI algorithm.
-See more information in ...
+See more information in https://github.com/ZhyBrian/SlicerAIAssistedBUSDiagnosis
 """
     # TODO: replace with organization, grant and thanks
     self.parent.acknowledgementText = """
