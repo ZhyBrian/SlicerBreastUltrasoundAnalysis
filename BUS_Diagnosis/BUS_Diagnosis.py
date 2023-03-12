@@ -59,58 +59,6 @@ See more information in https://github.com/ZhyBrian/SlicerAIAssistedBUSDiagnosis
 
 """
 
-    # Additional initialization step after application startup is complete
-    # slicer.app.connect("startupCompleted()", registerSampleData)
-
-
-#
-# Register sample data sets in Sample Data module
-#
-
-# def registerSampleData():
-#   """
-#   Add data sets to Sample Data module.
-#   """
-#   # It is always recommended to provide sample data for users to make it easy to try the module,
-#   # but if no sample data is available then this method (and associated startupCompeted signal connection) can be removed.
-
-#   import SampleData
-#   iconsPath = os.path.join(os.path.dirname(__file__), 'Resources/Icons')
-
-#   # To ensure that the source code repository remains small (can be downloaded and installed quickly)
-#   # it is recommended to store data sets that are larger than a few MB in a Github release.
-
-#   # BUS_Diagnosis1
-#   SampleData.SampleDataLogic.registerCustomSampleDataSource(
-#     # Category and sample name displayed in Sample Data module
-#     category='BUS_Diagnosis',
-#     sampleName='BUS_Diagnosis1',
-#     # Thumbnail should have size of approximately 260x280 pixels and stored in Resources/Icons folder.
-#     # It can be created by Screen Capture module, "Capture all views" option enabled, "Number of images" set to "Single".
-#     thumbnailFileName=os.path.join(iconsPath, 'BUS_Diagnosis1.png'),
-#     # Download URL and target file name
-#     uris="https://github.com/Slicer/SlicerTestingData/releases/download/SHA256/998cb522173839c78657f4bc0ea907cea09fd04e44601f17c82ea27927937b95",
-#     fileNames='BUS_Diagnosis1.nrrd',
-#     # Checksum to ensure file integrity. Can be computed by this command:
-#     #  import hashlib; print(hashlib.sha256(open(filename, "rb").read()).hexdigest())
-#     checksums = 'SHA256:998cb522173839c78657f4bc0ea907cea09fd04e44601f17c82ea27927937b95',
-#     # This node name will be used when the data set is loaded
-#     nodeNames='BUS_Diagnosis1'
-#   )
-
-#   # BUS_Diagnosis2
-#   SampleData.SampleDataLogic.registerCustomSampleDataSource(
-#     # Category and sample name displayed in Sample Data module
-#     category='BUS_Diagnosis',
-#     sampleName='BUS_Diagnosis2',
-#     thumbnailFileName=os.path.join(iconsPath, 'BUS_Diagnosis2.png'),
-#     # Download URL and target file name
-#     uris="https://github.com/Slicer/SlicerTestingData/releases/download/SHA256/1a64f3f422eb3d1c9b093d1a18da354b13bcf307907c66317e2463ee530b7a97",
-#     fileNames='BUS_Diagnosis2.nrrd',
-#     checksums = 'SHA256:1a64f3f422eb3d1c9b093d1a18da354b13bcf307907c66317e2463ee530b7a97',
-#     # This node name will be used when the data set is loaded
-#     nodeNames='BUS_Diagnosis2'
-#   )
 
 
 #
@@ -161,7 +109,6 @@ class BUS_DiagnosisWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
     # These connections ensure that we update parameter node when scene is closed
     self.addObserver(slicer.mrmlScene, slicer.mrmlScene.StartCloseEvent, self.onSceneStartClose)
     self.addObserver(slicer.mrmlScene, slicer.mrmlScene.EndCloseEvent, self.onSceneEndClose)
-    # self.addObserver(slicer.mrmlScene, slicer.mrmlScene.EndImportEvent, self.onEndImport)
 
     # developer area
     # These connections ensure that whenever user changes some settings on the GUI, that is saved in the MRML scene
@@ -235,11 +182,6 @@ class BUS_DiagnosisWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
     # If this module is shown while the scene is closed then recreate a new parameter node immediately
     if self.parent.isEntered:
       self.initializeParameterNode()
-  
-
-  # def onEndImport(self, caller, event):
-  #   slicer.mrmlScene.RemoveNode(self.logic.segmentationNode)
-
 
 
   def initializeParameterNode(self):
@@ -295,8 +237,6 @@ class BUS_DiagnosisWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
     # Update node selectors and sliders
     self.ui.inputSelector.setCurrentNode(self._parameterNode.GetNodeReference("InputVolume"))
     self.ui.outputSelector.setCurrentNode(self._parameterNode.GetNodeReference("OutputVolume"))
-    # self.ui.invertedOutputSelector.setCurrentNode(self._parameterNode.GetNodeReference("OutputVolumeInverse"))
-    # self.ui.imageThresholdSliderWidget.value = float(self._parameterNode.GetParameter("Threshold"))
     self.ui.segmentAllCheckBox.checked = (self._parameterNode.GetParameter("SegmentAll") == "true")
 
     # Update buttons states and tooltips
@@ -715,14 +655,12 @@ class BUS_DiagnosisLogic(ScriptedLoadableModuleLogic):
         self.redUpperBound = bounds[5]
         self.currentSlice = self.fromCurrentOffsettoCurrentSlice(self.currentOffset, 
                       self.redLowerBound, self.redUpperBound, self.numberOfChannels)
-        # print(self.currentOffset, self.currentSlice)
         if not self.segmentAll:
           input_img = input_img[:, :, self.currentSlice]
     else:
       logging.info('input should be 3D volume!')
       return -1
-    # input_img = np.flip(input_img, axis=0)
-    # input_img = np.flip(input_img, axis=1)
+    
     h, w = input_img.shape[0], input_img.shape[1]
     progressDiag.setMaximum(self.numberOfChannels)
     progressDiag.setValue(0)
@@ -738,13 +676,11 @@ class BUS_DiagnosisLogic(ScriptedLoadableModuleLogic):
       else:
         result_img, result_cls = self.AIAssistedSegment(input_img)  
         self.tumorClass, self.tumorProb = self.fromClsResulttoClassProb(result_cls)
-        # print(self.fromClsResulttoClassProb(result_cls))
         result_img_temp[:, :, self.currentSlice] = np.squeeze(result_img, axis=2)
         result_img = np.transpose(result_img_temp, axes=(2, 0, 1)).astype('int32')
     else:
       result_img, result_cls = self.AIAssistedSegment(input_img)  
       self.tumorClass, self.tumorProb = self.fromClsResulttoClassProb(result_cls)
-      # print(self.fromClsResulttoClassProb(result_cls))
       result_img = np.transpose(result_img, axes=(2, 0, 1)).astype('int32')
 
     slicer.mrmlScene.RemoveNode(self.segmentationNode)
