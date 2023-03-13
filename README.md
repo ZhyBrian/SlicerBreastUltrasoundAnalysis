@@ -42,7 +42,7 @@ Please restart 3D Slicer after installation to enable this module.
 
 1. Import breast ultrasound images in DICOM format(PNG format is available but not recommended) into 3D Slicer through `Add DICOM Data` module.([SampleData](https://github.com/ZhyBrian/SlicerBreastUltrasoundAnalysis/tree/master/SampleData) is provided in the repository)
 
-2. Jump to `AI Assisted BUS Diagnosis` module and select the ultrasound volume you just imported as the input of the AI prediction algorithm in this module.
+2. Jump to `Breast Ultrasound Analysis` module and select the ultrasound volume you just imported as the input of the AI prediction algorithm in this module.
 
 3. Select the output volume as the result of AI segmentation(`Create new Volume` is highly recommended).
 
