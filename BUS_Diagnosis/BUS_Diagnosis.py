@@ -43,7 +43,7 @@ class BUS_Diagnosis(ScriptedLoadableModule):
 
   def __init__(self, parent):
     ScriptedLoadableModule.__init__(self, parent)
-    self.parent.title = "AI Breast US Diagnosis"  # TODO: make this more human readable by adding spaces
+    self.parent.title = "Breast Ultrasound Analysis"  # TODO: make this more human readable by adding spaces
     self.parent.categories = ["Utilities"]  # TODO: set categories (folders where the module shows up in the module selector)
     self.parent.dependencies = []  # TODO: add here list of module names that this module requires
     self.parent.contributors = ["Yi Zhang (Chongqing University, China), Xiaojun Chen (Shanghai Jiao Tong University, China)"]  # TODO: replace with "Firstname Lastname (Organization)"
@@ -52,7 +52,7 @@ class BUS_Diagnosis(ScriptedLoadableModule):
 This module is designed to help physicians diagnose intramammary lesions based on breast ultrasound images with nodules. 
 Based on the DICOM ultrasound image imported into 3D Slicer, 
 this module can segment the nodule from the image and predict whether the nodule is malignant through its built-in AI algorithm.
-See more information in https://github.com/ZhyBrian/SlicerAIAssistedBUSDiagnosis
+See more information in https://github.com/ZhyBrian/SlicerBreastUltrasoundAnalysis
 """
     # TODO: replace with organization, grant and thanks
     self.parent.acknowledgementText = """

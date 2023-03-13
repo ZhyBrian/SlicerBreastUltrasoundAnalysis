@@ -1,10 +1,10 @@
-# AI Breast US Diagnosis Extension for 3D Slicer
+# Breast Ultrasound Analysis Extension for 3D Slicer
 
 This extension currently contains only one module, which has the same name as the extension name.
 
 
 
-## Module: AI Breast US Diagnosis
+## Module: Breast Ultrasound Analysis
 
 <img src="./BUS_Diagnosis.png" alt="BUS_Diagnosis"/>
 
