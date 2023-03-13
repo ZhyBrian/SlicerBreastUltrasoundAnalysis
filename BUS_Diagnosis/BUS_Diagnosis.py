@@ -56,7 +56,47 @@ See more information in https://github.com/ZhyBrian/SlicerBreastUltrasoundAnalys
 
 """
 
+    # Additional initialization step after application startup is complete
+    slicer.app.connect("startupCompleted()", registerSampleData)
 
+
+# 
+# Register sample data sets in Sample Data module
+# 
+
+def registerSampleData():
+  """
+  Add data sets to Sample Data module.
+  """
+  # It is always recommended to provide sample data for users to make it easy to try the module,
+  # but if no sample data is available then this method (and associated startupCompeted signal connection) can be removed.
+
+  import SampleData
+  iconsPath = os.path.join(os.path.dirname(__file__), 'Resources/Icons')
+
+  # To ensure that the source code repository remains small (can be downloaded and installed quickly)
+  # it is recommended to store data sets that are larger than a few MB in a Github release.
+
+  # BenignSample6
+  SampleData.SampleDataLogic.registerCustomSampleDataSource(
+    # Category and sample name displayed in Sample Data module
+    category='BreastUltrasoundAnalysisSampleData',
+    sampleName='BenignSample6',
+    # Thumbnail should have size of approximately 260x280 pixels and stored in Resources/Icons folder.
+    # It can be created by Screen Capture module, "Capture all views" option enabled, "Number of images" set to "Single".
+    thumbnailFileName=os.path.join(iconsPath, 'BenignSample6.png'),
+    # Download URL and target file name
+    uris="https://link.jscdn.cn/googledrive/direct/aHR0cHM6Ly9kcml2ZS5nb29nbGUuY29tL2ZpbGUvZC8xMWVUQzktV0xqb3AzOWEzZzdIUnJoSUwtNWduUVEwQXkvdmlldz91c3A9c2hhcmluZw.nrrd",
+    fileNames='BenignSample6.nrrd',
+    # Checksum to ensure file integrity. Can be computed by this command:
+    #  import hashlib; print(hashlib.sha256(open(filename, "rb").read()).hexdigest())
+    checksums = 'b17ce71e6cbaa6e84edfae9e3ebdabe0155f402ccfd8b074e72f301cb34e50e5',
+    # This node name will be used when the data set is loaded
+    nodeNames='BenignSample6'
+  )
+
+# import hashlib
+# print(hashlib.sha256(open(r"C:\Users\84497\Desktop\BenignSample6.nrrd", "rb").read()).hexdigest())
 
 #
 # BUS_DiagnosisWidget
