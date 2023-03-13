@@ -16,18 +16,16 @@ The AI prediction algorithm integrated in this module will be continuously updat
 
 
 
-To enable this module, [PyTorch](https://pytorch.org/) and [opencv-python](https://pypi.org/project/opencv-python/) must be installed in your 3D Slicer. **This module will install them automatically when you restart 3D Slicer for the first time after installing this module(so please be patient at that time).** If the automatic installation fails, check that your network connection is available and try entering the following code in Python Interactor: 
+To enable this module, [PyTorch](https://pytorch.org/) must be installed in your 3D Slicer. **This module will install them automatically when you restart 3D Slicer for the first time after installing this module(so please be patient at that time).** If the automatic installation fails, check that your network connection is available and try entering the following code in Python Interactor: 
 
 ```python
 slicer.util.pip_install('torch torchvision torchaudio')
-slicer.util.pip_install('opencv-python')
 ```
 
 or (especially for users located in China):
 
 ```python
 slicer.util.pip_install('torch torchvision torchaudio -i https://pypi.tuna.tsinghua.edu.cn/simple')
-slicer.util.pip_install('opencv-python -i https://pypi.tuna.tsinghua.edu.cn/simple')
 ```
 
 Please restart 3D Slicer after installation to enable this module.

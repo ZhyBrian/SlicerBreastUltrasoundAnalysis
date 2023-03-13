@@ -11,9 +11,9 @@ import numpy as np
 import math
 import qt
 import copy
+import SimpleITK as sitk
 
 try:
-  import cv2
   from PIL import Image
   import torch
   import torch.nn as nn
@@ -21,8 +21,6 @@ try:
   from torchvision import transforms
 except:
   slicer.util.pip_install('torch torchvision torchaudio')
-  slicer.util.pip_install('opencv-python')
-  import cv2
   from PIL import Image
   import torch
   import torch.nn as nn
@@ -30,7 +28,6 @@ except:
   from torchvision import transforms
 finally:
   logging.info(f'From BUS_Diagnosis: torch version: {torch.__version__}')
-  logging.info(f'From BUS_Diagnosis: cv2 version: {cv2.__version__}')
 
 #
 # BUS_Diagnosis
@@ -139,7 +136,6 @@ class BUS_DiagnosisWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
     # Buttons
     self.ui.applyButton.connect('clicked(bool)', self.onApplyButton)
     self.ui.installPytorchButton.connect('clicked(bool)', self.onInstallPytorchButton)
-    self.ui.installcv2Button.connect('clicked(bool)', self.onInstallcv2Button)
     self.ui.pushButtonHideSeg.connect('clicked(bool)', self.onPushButtonHideSeg)
     self.ui.pushButtonShowSeg.connect('clicked(bool)', self.onPushButtonShowSeg)
     self.ui.movetoOffsetButton.connect('clicked(bool)', self.onMovetoOffsetButton)
@@ -241,7 +237,6 @@ class BUS_DiagnosisWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
 
     # Update buttons states and tooltips
     self.ui.installPytorchButton.toolTip = "Install up-to-date Pytorch(cpu version) to enable this module"
-    self.ui.installcv2Button.toolTip = "Install up-to-date opencv-python to enable this module"
     if self._parameterNode.GetNodeReference("InputVolume") and self._parameterNode.GetNodeReference("OutputVolume"):
       if self.ui.segmentAllCheckBox.checked:
         self.ui.applyButton.toolTip = "Predict segmentation results for all slices"
@@ -346,10 +341,6 @@ class BUS_DiagnosisWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
     import torch
     logging.info(f'From BUS_Diagnosis: torch version: {torch.__version__}')
   
-  def onInstallcv2Button(self):
-    slicer.util.pip_install('opencv-python')
-    import cv2
-    logging.info(f'From BUS_Diagnosis: cv2 version: {cv2.__version__}')
   
   def onPushButtonHideSeg(self):
     if self.logic.segmentationNode is not None:
@@ -433,9 +424,9 @@ class BUS_DiagnosisWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
           savePath = savePath[:-1] + f"{int(savePath[-1]) + 1}"
         os.makedirs(savePath)
       
-      cv2.imwrite(os.path.join(savePath, f"Image.png"), inputVolumeArray)
-      cv2.imwrite(os.path.join(savePath, f"Label_AIpredicted.png"), np.flip(np.flip(outputVolumeArray, axis=0), axis=1))
-      cv2.imwrite(os.path.join(savePath, f"Label_Revised.png"), segmentArray*255)
+      sitk.WriteImage(sitk.Cast(sitk.GetImageFromArray(inputVolumeArray), sitk.sitkUInt8), os.path.join(savePath, f"Image.png"))
+      sitk.WriteImage(sitk.Cast(sitk.GetImageFromArray(np.flip(np.flip(outputVolumeArray, axis=0), axis=1)), sitk.sitkUInt8), os.path.join(savePath, f"Label_AIpredicted.png"))
+      sitk.WriteImage(sitk.Cast(sitk.GetImageFromArray(segmentArray * 255), sitk.sitkUInt8), os.path.join(savePath, f"Label_Revised.png"))
       with open(os.path.join(savePath, f"Classification_Result.txt"), 'w') as f:
         f.write(f"Patient Name       :  {patientName}\n")
         f.write(f"Patient ID         :  {shNode.GetItemAttribute(patientItem, 'DICOM.PatientID')}\n")
@@ -561,34 +552,41 @@ class BUS_DiagnosisLogic(ScriptedLoadableModuleLogic):
         mask = mask.resize(size, Image.NEAREST) 
     return mask, img.size[0], img.size[1]
   
+  
   def fill_binary_fig_holes_and_eliminate_noise(self, blank_thresh):
-    blank_thresh = cv2.medianBlur(blank_thresh, 3)
+    sitk_blank_thresh = sitk.GetImageFromArray(blank_thresh)
     
-    blank_thresh_copy = copy.deepcopy(blank_thresh)
-    h, w = blank_thresh_copy.shape[:2]
-    mask = np.zeros((h+2, w+2), np.uint8)
-    cv2.floodFill(blank_thresh_copy, mask, (0,0), 255)
-    blank_thresh_copy_inv = cv2.bitwise_not(blank_thresh_copy)
-    blank_thresh_out = blank_thresh | blank_thresh_copy_inv
+    median = sitk.MedianImageFilter()
+    median.SetRadius(2)
+    sitk_blank_thresh = median.Execute(sitk_blank_thresh)
     
-    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))  # rectangular
-    blank_thresh_out = cv2.morphologyEx(blank_thresh_out, cv2.MORPH_OPEN, kernel, iterations=1)
-    blank_thresh_out = cv2.medianBlur(blank_thresh_out, 3)
+    sitk_blank_thresh_copy = copy.deepcopy(sitk_blank_thresh)
+    sitk_blank_thresh_copy = sitk.ConnectedThreshold(sitk_blank_thresh_copy, seedList=[(0, 0)], lower=0, upper=250, replaceValue=255)
+    sitk_blank_thresh_copy_inv = sitk.InvertIntensity(sitk_blank_thresh_copy)
+    sitk_blank_thresh_out = sitk.Or(sitk_blank_thresh, sitk_blank_thresh_copy_inv)
     
-    num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(blank_thresh_out, connectivity=4)
-    if num_labels <= 2:
+    sitk_label_image = sitk.ConnectedComponent(sitk_blank_thresh_out, False)
+    
+    blank_thresh_out = sitk.GetArrayFromImage(sitk_blank_thresh_out)
+    label_image = sitk.GetArrayFromImage(sitk_label_image)
+    label_mask = copy.deepcopy(label_image)
+    num_connected = np.max(label_image) + 1
+    if num_connected <= 2:
       pass
     else:
-      areas = stats[1:, 4]
-      maxArea = np.max(areas)
-      for i in range(1, num_labels):
-        currentArea = stats[i, 4]
+      areas = [0, ]
+      for i in range(1, num_connected):
+        areas.append(np.sum(label_image == i))
+      maxArea = max(areas)
+      for j in range(1, num_connected):
+        currentArea = areas[j]
         if currentArea < 0.1 * maxArea:
-          labels[labels == i] = 0
-      blank_thresh_out = blank_thresh_out * labels
+          label_mask[label_mask == j] = 0
+      blank_thresh_out = blank_thresh_out * label_mask
       blank_thresh_out[blank_thresh_out > 255] = 255
-    
+          
     return blank_thresh_out
+  
   
   def AIAssistedSegment(self, input_img):
     input_img, w, h = self.keep_image_size_open_mask_test(input_img, size=(self.wh, self.wh))

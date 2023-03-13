@@ -31,25 +31,6 @@
     </widget>
    </item>
    <item>
-    <widget class="QPushButton" name="installcv2Button">
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>22</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>16777215</width>
-       <height>22</height>
-      </size>
-     </property>
-     <property name="text">
-      <string>Install opencv-python (up-to-date version)</string>
-     </property>
-    </widget>
-   </item>
-   <item>
     <spacer name="verticalSpacer_3">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
