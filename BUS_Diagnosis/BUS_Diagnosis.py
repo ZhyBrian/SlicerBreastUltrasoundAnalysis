@@ -25,15 +25,13 @@ except:
   try:
     import PyTorchUtils
   except ModuleNotFoundError as e:
-    raise RuntimeError("This module requires PyTorch extension. Install it from the Extensions Manager.")
-  
-  torchLogic = PyTorchUtils.PyTorchUtilsLogic()
-  if not torchLogic.torchInstalled():
-    logging.info('PyTorch Python package is required. Installing... (it may take several minutes)')
-    torch = torchLogic.installTorch(askConfirmation=True)
-    if torch is None:
-      raise ValueError('PyTorch extension needs to be installed to use this module.')
-    
+    pass
+  else:
+    torchLogic = PyTorchUtils.PyTorchUtilsLogic()
+    try:
+      torch = torchLogic.installTorch(askConfirmation=True)
+    except:
+      pass   
   slicer.util.pip_install('torch torchvision torchaudio')
   from PIL import Image
   import torch
