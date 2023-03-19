@@ -290,6 +290,7 @@ class BUS_DiagnosisWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
 
     # Update buttons states and tooltips
     self.ui.installPytorchButton.toolTip = "Install up-to-date Pytorch(cpu version) to enable this module"
+    self.ui.pushButtonDownloadSample.toolTip = "Download benign sample data from GitHub"
     if self._parameterNode.GetNodeReference("InputVolume") and self._parameterNode.GetNodeReference("OutputVolume"):
       if self.ui.segmentAllCheckBox.checked:
         self.ui.applyButton.toolTip = "Predict segmentation results for all slices"
@@ -755,7 +756,7 @@ class BUS_DiagnosisLogic(ScriptedLoadableModuleLogic):
     if not inputVolume or not outputVolume:
       raise ValueError("Input or output volume is invalid")
 
-    import time
+    # import time
     startTime = time.time()
     logging.info('Processing started')
     self.segmentAll = SegmentAll
