@@ -10,7 +10,7 @@ set(EXTENSION_CONTRIBUTORS "Yi Zhang (Chongqing University, China), Xiaojun Chen
 set(EXTENSION_DESCRIPTION "This module is designed to help physicians diagnose intramammary lesions based on breast ultrasound images with nodules.")
 set(EXTENSION_ICONURL "https://raw.githubusercontent.com/ZhyBrian/SlicerBreastUltrasoundAnalysis/master/Screenshots/BUS_Diagnosis_icon.png")
 set(EXTENSION_SCREENSHOTURLS "https://raw.githubusercontent.com/ZhyBrian/SlicerBreastUltrasoundAnalysis/master/Screenshots/overview.png")
-set(EXTENSION_DEPENDS "NA") # Specified as a list or "NA" if no dependencies
+set(EXTENSION_DEPENDS "PyTorch") # Specified as a list or "NA" if no dependencies
 
 #-----------------------------------------------------------------------------
 # Extension dependencies

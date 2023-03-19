@@ -1,5 +1,7 @@
 import logging
 import os
+import requests
+import time
 
 import vtk
 
@@ -20,6 +22,18 @@ try:
   import torch.utils.model_zoo as model_zoo
   from torchvision import transforms
 except:
+  try:
+    import PyTorchUtils
+  except ModuleNotFoundError as e:
+    raise RuntimeError("This module requires PyTorch extension. Install it from the Extensions Manager.")
+  
+  torchLogic = PyTorchUtils.PyTorchUtilsLogic()
+  if not torchLogic.torchInstalled():
+    logging.info('PyTorch Python package is required. Installing... (it may take several minutes)')
+    torch = torchLogic.installTorch(askConfirmation=True)
+    if torch is None:
+      raise ValueError('PyTorch extension needs to be installed to use this module.')
+    
   slicer.util.pip_install('torch torchvision torchaudio')
   from PIL import Image
   import torch
@@ -57,43 +71,43 @@ See more information in https://github.com/ZhyBrian/SlicerBreastUltrasoundAnalys
 """
 
     # Additional initialization step after application startup is complete
-    slicer.app.connect("startupCompleted()", registerSampleData)
+    # slicer.app.connect("startupCompleted()", registerSampleData)
 
 
 # 
 # Register sample data sets in Sample Data module
 # 
 
-def registerSampleData():
-  """
-  Add data sets to Sample Data module.
-  """
-  # It is always recommended to provide sample data for users to make it easy to try the module,
-  # but if no sample data is available then this method (and associated startupCompeted signal connection) can be removed.
+# def registerSampleData():
+#   """
+#   Add data sets to Sample Data module.
+#   """
+#   # It is always recommended to provide sample data for users to make it easy to try the module,
+#   # but if no sample data is available then this method (and associated startupCompeted signal connection) can be removed.
 
-  import SampleData
-  iconsPath = os.path.join(os.path.dirname(__file__), 'Resources/Icons')
+#   import SampleData
+#   iconsPath = os.path.join(os.path.dirname(__file__), 'Resources/Icons')
 
-  # To ensure that the source code repository remains small (can be downloaded and installed quickly)
-  # it is recommended to store data sets that are larger than a few MB in a Github release.
+#   # To ensure that the source code repository remains small (can be downloaded and installed quickly)
+#   # it is recommended to store data sets that are larger than a few MB in a Github release.
 
-  # BenignSample6
-  SampleData.SampleDataLogic.registerCustomSampleDataSource(
-    # Category and sample name displayed in Sample Data module
-    category='BreastUltrasoundAnalysisSampleData',
-    sampleName='BenignSample6',
-    # Thumbnail should have size of approximately 260x280 pixels and stored in Resources/Icons folder.
-    # It can be created by Screen Capture module, "Capture all views" option enabled, "Number of images" set to "Single".
-    thumbnailFileName=os.path.join(iconsPath, 'BenignSample6.png'),
-    # Download URL and target file name
-    uris="https://link.jscdn.cn/googledrive/direct/aHR0cHM6Ly9kcml2ZS5nb29nbGUuY29tL2ZpbGUvZC8xMWVUQzktV0xqb3AzOWEzZzdIUnJoSUwtNWduUVEwQXkvdmlldz91c3A9c2hhcmluZw.nrrd",
-    fileNames='BenignSample6.nrrd',
-    # Checksum to ensure file integrity. Can be computed by this command:
-    #  import hashlib; print(hashlib.sha256(open(filename, "rb").read()).hexdigest())
-    checksums = 'b17ce71e6cbaa6e84edfae9e3ebdabe0155f402ccfd8b074e72f301cb34e50e5',
-    # This node name will be used when the data set is loaded
-    nodeNames='BenignSample6'
-  )
+#   # BenignSample6
+#   SampleData.SampleDataLogic.registerCustomSampleDataSource(
+#     # Category and sample name displayed in Sample Data module
+#     category='BreastUltrasoundAnalysisSampleData',
+#     sampleName='BenignSample6',
+#     # Thumbnail should have size of approximately 260x280 pixels and stored in Resources/Icons folder.
+#     # It can be created by Screen Capture module, "Capture all views" option enabled, "Number of images" set to "Single".
+#     thumbnailFileName=os.path.join(iconsPath, 'BenignSample6.png'),
+#     # Download URL and target file name
+#     uris="https://github.com/ZhyBrian/SlicerBreastUltrasoundAnalysis/releases/download/v0.0.1/BenignSample6.nrrd",
+#     fileNames='BenignSample6.nrrd',
+#     # Checksum to ensure file integrity. Can be computed by this command:
+#     #  import hashlib; print(hashlib.sha256(open(filename, "rb").read()).hexdigest())
+#     checksums = 'b17ce71e6cbaa6e84edfae9e3ebdabe0155f402ccfd8b074e72f301cb34e50e5',
+#     # This node name will be used when the data set is loaded
+#     nodeNames='BenignSample6'
+#   )
 
 # import hashlib
 # print(hashlib.sha256(open(r"C:\Users\84497\Desktop\BenignSample6.nrrd", "rb").read()).hexdigest())
@@ -166,7 +180,7 @@ class BUS_DiagnosisWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
     self.progressDiag.setWindowModality(2)
     self.progressDiag.setMinimum(0)
     self.progressDiag.setMaximum(1)
-    self.progressDiag.setFixedSize(330, 50)
+    self.progressDiag.setFixedSize(380, 50)
     self.progressDiag.setAutoClose(False)
     self.progressDiag.setCancelButton(None)
     self.progressDiag.close()
@@ -176,6 +190,7 @@ class BUS_DiagnosisWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
     # Buttons
     self.ui.applyButton.connect('clicked(bool)', self.onApplyButton)
     self.ui.installPytorchButton.connect('clicked(bool)', self.onInstallPytorchButton)
+    self.ui.pushButtonDownloadSample.connect('clicked(bool)', self.onPushButtonDownloadSample)
     self.ui.pushButtonHideSeg.connect('clicked(bool)', self.onPushButtonHideSeg)
     self.ui.pushButtonShowSeg.connect('clicked(bool)', self.onPushButtonShowSeg)
     self.ui.movetoOffsetButton.connect('clicked(bool)', self.onMovetoOffsetButton)
@@ -358,6 +373,13 @@ class BUS_DiagnosisWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
     """
     with slicer.util.tryWithErrorDisplay("Failed to compute results.", waitCursor=True):
       
+      isload = self.logic.setupNet(self.progressDiag)
+      if not isload:
+        qt.QMessageBox.information(slicer.util.mainWindow(), "Warning", "Net weight failed to be loaded. \nAI is unable to provide appropriate diagnosis results.")
+        return
+      
+      self.progressDiag.setWindowTitle("Processing...")
+      self.progressDiag.setLabelText("Please Wait...")
       self.progressDiag.show()
       # Compute output
       isSegmentMoreThanOneSlice = self.logic.process(self.ui.inputSelector.currentNode(), 
@@ -381,6 +403,19 @@ class BUS_DiagnosisWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
     import torch
     logging.info(f'From BUS_Diagnosis: torch version: {torch.__version__}')
   
+  def onPushButtonDownloadSample(self):
+    directory = qt.QFileDialog.getExistingDirectory(slicer.util.mainWindow(), "Choose a Folder", "./")
+    if os.path.exists(directory):
+      url = "https://github.com/ZhyBrian/SlicerBreastUltrasoundAnalysis/releases/download/v0.0.1/BenignSample6.nrrd"
+      name = "BenignSample6.nrrd"
+      if not os.path.exists(os.path.join(directory, name)):
+        self.progressDiag.setWindowTitle("Downloading sample data...")
+        self.progressDiag.show()
+        self.logic.downloadShowProgress(url, directory, name, self.progressDiag, showsuccess=0)
+        self.progressDiag.close()
+      if os.path.exists(os.path.join(directory, name)):
+        slicer.util.loadVolume(os.path.join(directory, name))
+      
   
   def onPushButtonHideSeg(self):
     if self.logic.segmentationNode is not None:
@@ -549,13 +584,9 @@ class BUS_DiagnosisLogic(ScriptedLoadableModuleLogic):
     ScriptedLoadableModuleLogic.__init__(self)
     self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     self.model_seg = Unet(num_seg=1, num_class=2, pretrained=False, backbone='resnet50').to(self.device).eval()
-    weight_path_seg = os.path.join(os.path.dirname(__file__), 'Resources/net_weight.pth')
-    if os.path.exists(weight_path_seg):
-      self.model_seg.load_state_dict(torch.load(weight_path_seg, map_location=torch.device(self.device)))
-      logging.info('Net successfully loaded weight!')
-    else:
-      logging.info('Net weight failed to be loaded!')
-      qt.QMessageBox.information(slicer.util.mainWindow(), "Warning", "Net weight failed to be loaded. \nAI is unable to provide appropriate diagnosis results.")
+    self.weight_path_seg = os.path.join(os.path.dirname(__file__), 'Resources/net_weight.pth')
+    
+    self.weightloaded = 0
 
     self.transform = transforms.Compose([transforms.ToTensor()]) 
     self.wh = 384
@@ -578,6 +609,63 @@ class BUS_DiagnosisLogic(ScriptedLoadableModuleLogic):
     """
     if not parameterNode.GetParameter("SegmentAll"):
       parameterNode.SetParameter("SegmentAll", "false")
+  
+  
+  def downloadShowProgress(self, url, path, name, progressDiag, showsuccess=1):
+    if not os.path.exists(path):   
+      os.mkdir(path)
+    start = time.time() 
+    requests.DEFAULT_RETRIES = 5  
+    s = requests.session()
+    s.keep_alive = False  
+    headers = { 'Connection': 'close',}
+    response = requests.get(url, stream=True, verify=False, headers=headers)
+    size = 0    
+    chunk_size = 1024  
+    content_size = int(response.headers['content-length'])  
+    try:
+      if response.status_code == 200:   
+        progressDiag.setLabelText(f"File size: {content_size/chunk_size/1024:.2f} MB")
+        progressDiag.setMaximum(100)
+        filepath = os.path.join(path, name)
+        with open(filepath,'wb') as file:   
+          for data in response.iter_content(chunk_size = chunk_size):
+            file.write(data)
+            size += len(data)
+            progressDiag.setValue(float(size / content_size * 100))
+      end = time.time()   
+      if showsuccess:
+        qt.QMessageBox.information(slicer.util.mainWindow(), "Information", f"Download successfully! Time spent: {end - start:.2f}s     ")
+    except:
+      qt.QMessageBox.information(slicer.util.mainWindow(), "Error", "Download failed!     ")
+  
+  
+  def setupNet(self, progressDiag):
+    if not self.weightloaded:
+      if not os.path.exists(self.weight_path_seg):
+        url = "https://github.com/ZhyBrian/SlicerBreastUltrasoundAnalysis/releases/download/v0.0.1/net_weight.pth"
+        path = os.path.join(os.path.dirname(__file__), 'Resources')
+        name = "net_weight.pth"
+        
+        progressDiag.setWindowTitle("Downloading net weight(only for once)...")
+        progressDiag.show()
+        self.downloadShowProgress(url, path, name, progressDiag, showsuccess=0)
+        progressDiag.close()
+      
+      try:
+        self.model_seg.load_state_dict(torch.load(self.weight_path_seg, map_location=torch.device(self.device)))
+      except:
+        logging.info('Net weight failed to be loaded!')
+        self.weightloaded = 0
+        return 0
+      else:
+        logging.info('Net successfully loaded weight!')
+        self.weightloaded = 1
+        return 1
+    else:
+      return 1
+        
+
 
   def keep_image_size_open_mask_test(self, input_img, size, scale_method='ANTIALIAS'):
     logging.info(f'input image size: {input_img.shape}')
