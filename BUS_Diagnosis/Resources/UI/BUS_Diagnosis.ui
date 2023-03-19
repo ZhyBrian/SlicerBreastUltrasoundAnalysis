@@ -45,7 +45,7 @@
       </size>
      </property>
      <property name="text">
-      <string>Download and Load Sample Data</string>
+      <string>Download and Show Sample Data</string>
      </property>
     </widget>
    </item>
