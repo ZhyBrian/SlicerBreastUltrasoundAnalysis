@@ -162,9 +162,10 @@ class BUS_DiagnosisWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
     # developer area
     # These connections ensure that whenever user changes some settings on the GUI, that is saved in the MRML scene
     # (in the selected parameter node).
-    self.ui.inputSelector.connect("currentNodeChanged(vtkMRMLNode*)", self.updateParameterNodeFromGUI1)
-    self.ui.outputSelector.connect("currentNodeChanged(vtkMRMLNode*)", self.updateParameterNodeFromGUI2)
-    self.ui.segmentAllCheckBox.connect("toggled(bool)", self.updateParameterNodeFromGUI3)
+    self.ui.inputSelector.connect("currentNodeChanged(vtkMRMLNode*)", self.updateParameterNodeFromGUIinput)
+    self.ui.outputSelector.connect("currentNodeChanged(vtkMRMLNode*)", self.updateParameterNodeFromGUIoutput)
+    self.ui.outputMaskSelector.connect("currentNodeChanged(vtkMRMLNode*)", self.updateParameterNodeFromGUIoutputMask)
+    self.ui.segmentAllCheckBox.connect("toggled(bool)", self.updateParameterNodeFromGUIcheck)
 
     self.processingDiag = qt.QDialog(slicer.util.mainWindow())
     self.processingDiag.setWindowModality(2)
@@ -193,6 +194,10 @@ class BUS_DiagnosisWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
     self.ui.pushButtonShowSeg.connect('clicked(bool)', self.onPushButtonShowSeg)
     self.ui.movetoOffsetButton.connect('clicked(bool)', self.onMovetoOffsetButton)
     self.ui.pushButtonSaveResults.connect('clicked(bool)', self.onPushButtonSaveResults)
+    self.ui.pushButtonSetLB.connect('clicked(bool)', self.onPushButtonSetLB)
+    self.ui.pushButtonSetRB.connect('clicked(bool)', self.onPushButtonSetRB)
+    self.ui.pushButtonResetLB.connect('clicked(bool)', self.ResetLeftOffsetBound)
+    self.ui.pushButtonResetRB.connect('clicked(bool)', self.ResetRightOffsetBound)
 
     # Make sure parameter node is initialized (needed for module reload)
     self.initializeParameterNode()
@@ -283,23 +288,33 @@ class BUS_DiagnosisWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
     self._updatingGUIFromParameterNode = True
 
     # developer area
-    # Update node selectors and sliders
+    # Update node selectors 
     self.ui.inputSelector.setCurrentNode(self._parameterNode.GetNodeReference("InputVolume"))
     self.ui.outputSelector.setCurrentNode(self._parameterNode.GetNodeReference("OutputVolume"))
+    self.ui.outputMaskSelector.setCurrentNode(self._parameterNode.GetNodeReference("OutputMask"))
     self.ui.segmentAllCheckBox.checked = (self._parameterNode.GetParameter("SegmentAll") == "true")
 
     # Update buttons states and tooltips
     self.ui.installPytorchButton.toolTip = "Install up-to-date Pytorch(cpu version) to enable this module"
     self.ui.pushButtonDownloadSample.toolTip = "Download benign sample data from GitHub"
-    if self._parameterNode.GetNodeReference("InputVolume") and self._parameterNode.GetNodeReference("OutputVolume"):
+    if self._parameterNode.GetNodeReference("InputVolume") and self._parameterNode.GetNodeReference("OutputVolume") and self._parameterNode.GetNodeReference("OutputMask"):
       if self.ui.segmentAllCheckBox.checked:
-        self.ui.applyButton.toolTip = "Predict segmentation results for all slices"
+        self.ui.applyButton.toolTip = "Predict segmentation results for multiple slices"
       else:
         self.ui.applyButton.toolTip = "Predict segmentation and diagnosis results only for the current slice"
       self.ui.applyButton.enabled = True
     else:
-      self.ui.applyButton.toolTip = "Select input and output volume nodes first"
+      self.ui.applyButton.toolTip = "Select input and output nodes first"
       self.ui.applyButton.enabled = False
+    
+    if self.ui.segmentAllCheckBox.checked:
+      self.ui.offsetBoundCollapsibleButton.enabled = True
+      self.ui.offsetBoundCollapsibleButton.checked = True
+      self.ui.pushButtonSetLB.enabled = True
+      self.ui.pushButtonSetRB.enabled = True
+    else:
+      self.ui.offsetBoundCollapsibleButton.checked = False
+      self.ui.offsetBoundCollapsibleButton.enabled = False
       
     self.UpdateShowHideButtonStatus()
     self.UpdateMovetoOffsetButtonStatus()
@@ -309,7 +324,7 @@ class BUS_DiagnosisWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
     self._updatingGUIFromParameterNode = False
     
     
-  def updateParameterNodeFromGUI1(self, caller=None, event=None):
+  def updateParameterNodeFromGUIinput(self, caller=None, event=None):
     """
     This method is called when the user makes any change in the GUI.
     The changes are saved into the parameter node (so that they are restored when the scene is saved and loaded).
@@ -329,7 +344,11 @@ class BUS_DiagnosisWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
     slicer.util.resetSliceViews()
     self.onPushButtonHideSeg()
 
-  def updateParameterNodeFromGUI2(self, caller=None, event=None):
+    self.ResetLeftOffsetBound()
+    self.ResetRightOffsetBound()
+    
+
+  def updateParameterNodeFromGUIoutput(self, caller=None, event=None):
     """
     This method is called when the user makes any change in the GUI.
     The changes are saved into the parameter node (so that they are restored when the scene is saved and loaded).
@@ -344,8 +363,26 @@ class BUS_DiagnosisWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
     self._parameterNode.SetNodeReferenceID("OutputVolume", self.ui.outputSelector.currentNodeID)
 
     self._parameterNode.EndModify(wasModified)
+    
+  def updateParameterNodeFromGUIoutputMask(self, caller=None, event=None):
+    """
+    This method is called when the user makes any change in the GUI.
+    The changes are saved into the parameter node (so that they are restored when the scene is saved and loaded).
+    """
+
+    if self._parameterNode is None or self._updatingGUIFromParameterNode:
+      return
+
+    wasModified = self._parameterNode.StartModify()  # Modify all properties in a single batch
+
+    # developer area
+    self._parameterNode.SetNodeReferenceID("OutputMask", self.ui.outputMaskSelector.currentNodeID)
+
+    self._parameterNode.EndModify(wasModified)
+    
+    self.onPushButtonHideSeg()
   
-  def updateParameterNodeFromGUI3(self, caller=None, event=None):
+  def updateParameterNodeFromGUIcheck(self, caller=None, event=None):
     """
     This method is called when the user makes any change in the GUI.
     The changes are saved into the parameter node (so that they are restored when the scene is saved and loaded).
@@ -382,9 +419,11 @@ class BUS_DiagnosisWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
       self.progressDiag.show()
       # Compute output
       isSegmentMoreThanOneSlice = self.logic.process(self.ui.inputSelector.currentNode(), 
-          self.ui.outputSelector.currentNode(), self.progressDiag, self.ui.segmentAllCheckBox.checked)
+          self.ui.outputSelector.currentNode(), self.ui.outputMaskSelector.currentNode(), 
+          self.progressDiag, self.ui.segmentAllCheckBox.checked, self.ui.labelLB.text, self.ui.labelRB.text)
       
       if isSegmentMoreThanOneSlice == -1:
+        self.progressDiag.close()
         return
       
       self.UpdateClassificationResults(isSegmentMoreThanOneSlice)
@@ -470,7 +509,7 @@ class BUS_DiagnosisWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
       inputVolumeNode = slicer.mrmlScene.GetNodeByID(self.ui.labelInputNode.text)
       outputVolumeNode = slicer.mrmlScene.GetNodeByID(self.ui.labelOutputNode.text)
       segmentNode = slicer.mrmlScene.GetNodeByID(self.ui.labelSegNode.text)
-      segmentId = segmentNode.GetSegmentation().GetSegmentIdBySegmentName(f'Segment_1')
+      self.logic.currentSegmentID = segmentId = segmentNode.GetSegmentation().GetNthSegmentID(0)
       segmentArray = slicer.util.arrayFromSegmentBinaryLabelmap(segmentNode, segmentId, inputVolumeNode)
       inputVolumeArray = slicer.util.arrayFromVolume(inputVolumeNode)
       outputVolumeArray = slicer.util.arrayFromVolume(outputVolumeNode)
@@ -560,6 +599,19 @@ class BUS_DiagnosisWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
       elif self.logic.tumorClass == "Malignant":
         self.ui.labelClass.setStyleSheet("color:red;")
         self.ui.labelProb.setStyleSheet("color:red;")
+    
+  def onPushButtonSetLB(self):
+    self.ui.labelLB.setText(f'{slicer.app.layoutManager().sliceWidget("Red").sliceLogic().GetSliceOffset():.4f}')
+    
+  def onPushButtonSetRB(self):
+    self.ui.labelRB.setText(f'{slicer.app.layoutManager().sliceWidget("Red").sliceLogic().GetSliceOffset():.4f}')
+  
+  def ResetLeftOffsetBound(self):
+    self.ui.labelLB.setText("default")
+  
+  def ResetRightOffsetBound(self):
+    self.ui.labelRB.setText("default")
+  
 
 
 #
@@ -590,6 +642,7 @@ class BUS_DiagnosisLogic(ScriptedLoadableModuleLogic):
     self.transform = transforms.Compose([transforms.ToTensor()]) 
     self.wh = 384
     self.segmentationNode = None
+    self.currentSegmentID = None
     self.currentOffset = 0
     self.currentSlice = 0
     self.redLowerBound = 0
@@ -744,7 +797,7 @@ class BUS_DiagnosisLogic(ScriptedLoadableModuleLogic):
     return round((currentOffset - minOffset) / gapValue)
  
     
-  def process(self, inputVolume, outputVolume, progressDiag, SegmentAll=False):
+  def process(self, inputVolume, outputVolume, outputMask, progressDiag, SegmentAll=False, leftOffsetBound="default", rightOffsetBound="default"):
     """
     Run the processing algorithm.
     Can be used without GUI widget.
@@ -759,6 +812,8 @@ class BUS_DiagnosisLogic(ScriptedLoadableModuleLogic):
     # import time
     startTime = time.time()
     logging.info('Processing started')
+    progressDiag.setMaximum(101)
+    progressDiag.setValue(0)
     self.segmentAll = SegmentAll
 
     input_img = slicer.util.arrayFromVolume(inputVolume)
@@ -782,21 +837,34 @@ class BUS_DiagnosisLogic(ScriptedLoadableModuleLogic):
                       self.redLowerBound, self.redUpperBound, self.numberOfChannels)
         if not self.segmentAll:
           input_img = input_img[:, :, self.currentSlice]
+        else:
+          if leftOffsetBound == "default":
+            leftBound = 0
+          else:
+            leftBound = self.fromCurrentOffsettoCurrentSlice(float(leftOffsetBound), 
+                      self.redLowerBound, self.redUpperBound, self.numberOfChannels)
+          if rightOffsetBound == "default":
+            rightBound = self.numberOfChannels - 1
+          else:
+            rightBound = self.fromCurrentOffsettoCurrentSlice(float(rightOffsetBound), 
+                      self.redLowerBound, self.redUpperBound, self.numberOfChannels)
+          if rightBound < leftBound:
+            qt.QMessageBox.information(slicer.util.mainWindow(), "Error", "Left offset bound > right offset bound!    ")
+            return -1
     else:
+      qt.QMessageBox.information(slicer.util.mainWindow(), "Error", "input should be 3D volume!     ")
       logging.info('input should be 3D volume!')
       return -1
     
     h, w = input_img.shape[0], input_img.shape[1]
-    progressDiag.setMaximum(self.numberOfChannels)
-    progressDiag.setValue(0)
     
     if self.isMultipleChannel:
       result_img_temp = np.zeros((h, w, self.numberOfChannels))
       if len(input_img.shape) >= 3:
         assert self.segmentAll == True
-        for i in range(self.numberOfChannels):
+        for i in range(leftBound, rightBound + 1):
           result_img_temp[:, :, i] = np.squeeze(self.AIAssistedSegment(input_img[:, :, i])[0], axis=2)
-          progressDiag.setValue(i)
+          progressDiag.setValue(100 * (i - leftBound) / (rightBound - leftBound + 0.001))
         result_img = np.transpose(result_img_temp, axes=(2, 0, 1)).astype('int32')
       else:
         result_img, result_cls = self.AIAssistedSegment(input_img)  
@@ -808,15 +876,18 @@ class BUS_DiagnosisLogic(ScriptedLoadableModuleLogic):
       self.tumorClass, self.tumorProb = self.fromClsResulttoClassProb(result_cls)
       result_img = np.transpose(result_img, axes=(2, 0, 1)).astype('int32')
 
-    slicer.mrmlScene.RemoveNode(self.segmentationNode)
-    self.segmentationNode = slicer.mrmlScene.AddNewNodeByClass("vtkMRMLSegmentationNode")
-    self.segmentationNode.CreateDefaultDisplayNodes()
-    self.segmentationNode.GetSegmentation().AddEmptySegment()
-    segmentId = self.segmentationNode.GetSegmentation().GetSegmentIdBySegmentName(f'Segment_1')
-    slicer.util.updateSegmentBinaryLabelmapFromArray(result_img, self.segmentationNode, segmentId, inputVolume)
+    # slicer.mrmlScene.RemoveNode(self.segmentationNode)
+    # self.segmentationNode = slicer.mrmlScene.AddNewNodeByClass("vtkMRMLSegmentationNode")
+    outputMask.CreateDefaultDisplayNodes()
+    if outputMask.GetSegmentation().GetNumberOfSegments() >= 1:
+      self.currentSegmentID = outputMask.GetSegmentation().GetNthSegmentID(0)
+    else:
+      self.currentSegmentID = outputMask.GetSegmentation().AddEmptySegment()
+    slicer.util.updateSegmentBinaryLabelmapFromArray(result_img, outputMask, self.currentSegmentID, inputVolume)
+    self.segmentationNode = outputMask
 
     slicer.util.updateVolumeFromArray(outputVolume, np.flip(np.flip(result_img, axis=1), axis=2))
-    progressDiag.setValue(self.numberOfChannels)
+    progressDiag.setValue(101)
 
     stopTime = time.time()
     logging.info(f'Processing completed in {stopTime-startTime:.2f} seconds')
