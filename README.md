@@ -1,8 +1,12 @@
 # Breast Ultrasound Analysis Extension for 3D Slicer
 
-This extension currently contains only one module, which has the same name as the extension name.
+## Introduction and Acknowledgements
 
+Authors: Xiaojun Chen, Yi Zhang (Shanghai Jiao Tong University)
 
+Contact: Xiaojun Chen, <email>xiaojunchen@163.com</email>
+
+<img src="./Screenshots/SJTU.png" alt="BUS_Diagnosis" style="zoom:33%;" />
 
 ## Module: Breast Ultrasound Analysis
 
