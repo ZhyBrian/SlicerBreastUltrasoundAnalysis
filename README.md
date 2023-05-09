@@ -6,6 +6,10 @@ Authors: Xiaojun Chen, Yi Zhang (Shanghai Jiao Tong University)
 
 Contact: Prof. Xiaojun Chen (Shanghai Jiao Tong University)
 
+Website: [https://github.com/ZhyBrian/SlicerBreastUltrasoundAnalysis](https://github.com/ZhyBrian/SlicerBreastUltrasoundAnalysis)
+
+License: [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0)
+
 <img src="./Screenshots/SJTU.png" alt="BUS_Diagnosis"  />
 
 ## Module: Breast Ultrasound Analysis
