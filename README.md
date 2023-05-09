@@ -4,7 +4,7 @@
 
 Authors: Xiaojun Chen, Yi Zhang (Shanghai Jiao Tong University)
 
-Contact: Xiaojun Chen, <email>xiaojunchen@163.com</email>
+Contact: Prof. Xiaojun Chen (Shanghai Jiao Tong University)
 
 <img src="./Screenshots/SJTU.png" alt="BUS_Diagnosis"  />
 
