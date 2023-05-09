@@ -6,7 +6,7 @@ Authors: Xiaojun Chen, Yi Zhang (Shanghai Jiao Tong University)
 
 Contact: Xiaojun Chen, <email>xiaojunchen@163.com</email>
 
-<img src="./Screenshots/SJTU.png" alt="BUS_Diagnosis" style="zoom:33%;" />
+<img src="./Screenshots/SJTU.png" alt="BUS_Diagnosis"  />
 
 ## Module: Breast Ultrasound Analysis
 
