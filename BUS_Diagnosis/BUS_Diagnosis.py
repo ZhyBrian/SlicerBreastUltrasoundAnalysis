@@ -55,7 +55,7 @@ class BUS_Diagnosis(ScriptedLoadableModule):
     self.parent.title = "Breast Ultrasound Analysis"  # TODO: make this more human readable by adding spaces
     self.parent.categories = ["Utilities"]  # TODO: set categories (folders where the module shows up in the module selector)
     self.parent.dependencies = []  # TODO: add here list of module names that this module requires
-    self.parent.contributors = ["Xiaojun Chen, Yi Zhang (Shanghai Jiao Tong University, China)"]  # TODO: replace with "Firstname Lastname (Organization)"
+    self.parent.contributors = ["Yi Zhang (Chongqing University, China), Xiaojun Chen (Shanghai Jiao Tong University, China)"]  # TODO: replace with "Firstname Lastname (Organization)"
     # TODO: update with short description of the module and a link to online module documentation
     self.parent.helpText = """
 This module is designed to help physicians diagnose intramammary lesions based on breast ultrasound images with nodules. 
