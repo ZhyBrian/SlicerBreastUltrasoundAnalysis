@@ -444,7 +444,7 @@ class BUS_DiagnosisWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
   def onPushButtonDownloadSample(self):
     directory = qt.QFileDialog.getExistingDirectory(slicer.util.mainWindow(), "Choose a Folder", "./")
     if os.path.exists(directory):
-      url = "https://github.com/ZhyBrian/SlicerBreastUltrasoundAnalysis/releases/download/v0.0.1/BenignSample6.nrrd"
+      url = "https://files.zohopublic.com.cn/public/workdrive-public/download/gs6x3115b0ad456d64bcea35e8ded967d2b2e?x-cli-msg=%7B%22isFileOwner%22%3Afalse%2C%22version%22%3A%221.0%22%7D"
       name = "BenignSample6.nrrd"
       if not os.path.exists(os.path.join(directory, name)):
         self.progressDiag.setWindowTitle("Downloading sample data...")
@@ -670,7 +670,8 @@ class BUS_DiagnosisLogic(ScriptedLoadableModuleLogic):
     requests.DEFAULT_RETRIES = 5  
     s = requests.session()
     s.keep_alive = False  
-    headers = { 'Connection': 'close',}
+    headers = { 'Connection': 'close',
+               'Accept-Encoding': 'identity',}
     response = requests.get(url, stream=True, verify=False, headers=headers)
     size = 0    
     chunk_size = 1024  
@@ -695,7 +696,7 @@ class BUS_DiagnosisLogic(ScriptedLoadableModuleLogic):
   def setupNet(self, progressDiag):
     if not self.weightloaded:
       if not os.path.exists(self.weight_path_seg):
-        url = "https://github.com/ZhyBrian/SlicerBreastUltrasoundAnalysis/releases/download/v0.0.1/net_weight.pth"
+        url = "https://files.zohopublic.com.cn/public/workdrive-public/download/gs6x33211b710ab27421ba1dd54828482641f?x-cli-msg=%7B%22isFileOwner%22%3Afalse%2C%22version%22%3A%221.0%22%7D"
         path = os.path.join(os.path.dirname(__file__), 'Resources')
         name = "net_weight.pth"
         
