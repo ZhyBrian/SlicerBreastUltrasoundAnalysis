@@ -40,7 +40,7 @@ The AI prediction algorithm integrated in this module will be continuously updat
 
    Please restart 3D Slicer after installation to enable this module.
 
-2. **If you encounter any issues when downloading the sample data by clicking the `Download and Show Sample Data` button**, you may try downloading the sample data manually by using the following links:
+2. **If you encounter any issues when downloading the sample data by clicking the `Download and Show Sample Data` button**, you may try downloading the sample data manually by using any of the following links:
 
    - [SampleData (Google Drive)](https://drive.google.com/file/d/11eTC9-WLjop39a3g7HRrhIL-5gnQQ0Ay/view?usp=sharing)
    - [SampleData (Zoho WorkDrive)](https://workdrive.zohopublic.com.cn/external/dabf8daab93df121bd0b8ff01203060e10a1de4542ece205bbbe23e4a379c816/download)
@@ -48,7 +48,7 @@ The AI prediction algorithm integrated in this module will be continuously updat
 
    Import the downloaded sample data (`BenignSample6.nrrd`) to 3D Slicer by `File`->`Add Data`.
 
-3. **If you have any trouble downloading the net weight file automatically when you first click the `AI Automatically Segment and Diagnose` button**, you can try downloading the file manually by using the following download links: 
+3. **If you have any trouble downloading the net weight file automatically when you first click the `AI Automatically Segment and Diagnose` button**, you can try downloading the file manually by using any of the following download links: 
 
    - [NetWeight (Google Drive)](https://drive.google.com/file/d/1c1dZo6lfaohfrtFFJZhODXNw1-gZr6_P/view?usp=share_link)
    - [NetWeight (Zoho WorkDrive)](https://workdrive.zohopublic.com.cn/external/fc5868a16789095cfab4d0011bb70578a26d7b3a59a30e4d41cf12fb82f02508/download)
