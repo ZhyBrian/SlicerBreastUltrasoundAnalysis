@@ -24,21 +24,37 @@ The AI prediction algorithm integrated in this module will be continuously updat
 
 
 
-To enable this module, [PyTorch](https://pytorch.org/) must be installed in your 3D Slicer. **This module will install them automatically when you restart 3D Slicer for the first time after installing this module (so please be patient at that time).** If the automatic installation fails, check that your network connection is available and try entering the following code in Python Interactor (or Python Console): 
+### Troubleshooting
 
-```python
-slicer.util.pip_install('torch torchvision torchaudio')
-```
+1. To enable this module, [PyTorch](https://pytorch.org/) must be installed in your 3D Slicer. **This module will install them automatically when you restart 3D Slicer for the first time after installing this module (so please be patient at that time). If the automatic installation fails,** check that your network connection is available and try entering the following code in Python Interactor (or Python Console): 
 
-or (especially for users located in China):
+   ```python
+   slicer.util.pip_install('torch torchvision torchaudio')
+   ```
 
-```python
-slicer.util.pip_install('torch torchvision torchaudio -i https://pypi.tuna.tsinghua.edu.cn/simple')
-```
+   or (especially for users located in China):
 
-Please restart 3D Slicer after installation to enable this module.
+   ```python
+   slicer.util.pip_install('torch torchvision torchaudio -i https://pypi.tuna.tsinghua.edu.cn/simple')
+   ```
 
+   Please restart 3D Slicer after installation to enable this module.
 
+2. **If you encounter any issues when downloading the sample data by clicking the `Download and Show Sample Data` button**, you may try downloading the sample data manually by using the following links:
+
+   - [SampleData (Google Drive)](https://drive.google.com/file/d/11eTC9-WLjop39a3g7HRrhIL-5gnQQ0Ay/view?usp=sharing)
+   - [SampleData (Zoho WorkDrive)](https://workdrive.zohopublic.com.cn/external/dabf8daab93df121bd0b8ff01203060e10a1de4542ece205bbbe23e4a379c816/download).
+
+   Import the downloaded sample data (`BenignSample6.nrrd`) to 3D Slicer by `File`->`Add Data`.
+
+3. **If you have any trouble downloading the net weight file automatically when you first click the `AI Automatically Segment and Diagnose` button**, you can try downloading the file manually by using the following download links: 
+
+   - [NetWeight (Google Drive)](https://drive.google.com/file/d/1c1dZo6lfaohfrtFFJZhODXNw1-gZr6_P/view?usp=share_link)
+   - [NetWeight (Zoho WorkDrive)](https://workdrive.zohopublic.com.cn/external/fc5868a16789095cfab4d0011bb70578a26d7b3a59a30e4d41cf12fb82f02508/download)
+
+   After downloading the net weight file (`net_weight.pth`), you need to move it manually to the correct path on your computer. First, locate the path of the `BUS_Diagnosis.py` file on your computer. The path to the `BUS_Diagnosis.py` file is usually something like this: `...\BUS_Diagnosis\lib\Slicer-x.x\qt-scripted-modules`. Then, move the downloaded `net_weight.pth` file to the `...\BUS_Diagnosis\lib\Slicer-x.x\qt-scripted-modules\Resources` directory. Once the net weight file is in the correct location, you should be able to run the `AI Automatically Segment and Diagnose` function without any issues.
+
+   
 
 ### Screenshot
 
@@ -48,7 +64,13 @@ Please restart 3D Slicer after installation to enable this module.
 
 ### Tutorial
 
-1. Import breast ultrasound images in DICOM format (PNG format is available but not recommended) into 3D Slicer through `Add DICOM Data` module. (Sample Data can be downloaded and loaded by clicking `Download and Show Sample Data` button. Other download links: [SampleData (Google Drive)](https://drive.google.com/file/d/11eTC9-WLjop39a3g7HRrhIL-5gnQQ0Ay/view?usp=sharing), [SampleData (Jianguo Yun)](https://www.jianguoyun.com/p/DXJYhssQyoG8CxjFj_oEIAA))
+#### Video Version
+
+- [3D Slicer BreastUltrasoundAnalysis Extension Tutorial - YouTube](https://www.youtube.com/watch?v=-8aWt-vl0N0)
+
+#### Text Version
+
+1. Import breast ultrasound images in DICOM format (PNG format is available but not recommended) into 3D Slicer through `Add DICOM Data` module. (Sample Data can be downloaded and loaded by clicking `Download and Show Sample Data` button. Other download links: [SampleData (Google Drive)](https://drive.google.com/file/d/11eTC9-WLjop39a3g7HRrhIL-5gnQQ0Ay/view?usp=sharing), [SampleData (Zoho WorkDrive)](https://workdrive.zohopublic.com.cn/external/dabf8daab93df121bd0b8ff01203060e10a1de4542ece205bbbe23e4a379c816/download))
 
 2. Jump to `Breast Ultrasound Analysis` module and select the ultrasound volume you just imported as the input of the AI prediction algorithm in this module.
 
