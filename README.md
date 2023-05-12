@@ -43,7 +43,8 @@ The AI prediction algorithm integrated in this module will be continuously updat
 2. **If you encounter any issues when downloading the sample data by clicking the `Download and Show Sample Data` button**, you may try downloading the sample data manually by using the following links:
 
    - [SampleData (Google Drive)](https://drive.google.com/file/d/11eTC9-WLjop39a3g7HRrhIL-5gnQQ0Ay/view?usp=sharing)
-   - [SampleData (Zoho WorkDrive)](https://workdrive.zohopublic.com.cn/external/dabf8daab93df121bd0b8ff01203060e10a1de4542ece205bbbe23e4a379c816/download).
+   - [SampleData (Zoho WorkDrive)](https://workdrive.zohopublic.com.cn/external/dabf8daab93df121bd0b8ff01203060e10a1de4542ece205bbbe23e4a379c816/download)
+   - [SampleData (GitHub)](https://github.com/ZhyBrian/SlicerBreastUltrasoundAnalysis/releases/download/v0.0.1/BenignSample6.nrrd)
 
    Import the downloaded sample data (`BenignSample6.nrrd`) to 3D Slicer by `File`->`Add Data`.
 
@@ -51,9 +52,10 @@ The AI prediction algorithm integrated in this module will be continuously updat
 
    - [NetWeight (Google Drive)](https://drive.google.com/file/d/1c1dZo6lfaohfrtFFJZhODXNw1-gZr6_P/view?usp=share_link)
    - [NetWeight (Zoho WorkDrive)](https://workdrive.zohopublic.com.cn/external/fc5868a16789095cfab4d0011bb70578a26d7b3a59a30e4d41cf12fb82f02508/download)
-
+   - [NetWeight (GitHub)](https://github.com/ZhyBrian/SlicerBreastUltrasoundAnalysis/releases/download/v0.0.1/net_weight.pth)
+   
    After downloading the net weight file (`net_weight.pth`), you need to move it manually to the correct path on your computer. First, locate the path of the `BUS_Diagnosis.py` file on your computer. The path to the `BUS_Diagnosis.py` file is usually something like this: `...\BUS_Diagnosis\lib\Slicer-x.x\qt-scripted-modules`. Then, move the downloaded `net_weight.pth` file to the `...\BUS_Diagnosis\lib\Slicer-x.x\qt-scripted-modules\Resources` directory. Once the net weight file is in the correct location, you should be able to run the `AI Automatically Segment and Diagnose` function without any issues.
-
+   
    
 
 ### Screenshot
@@ -70,7 +72,7 @@ The AI prediction algorithm integrated in this module will be continuously updat
 
 #### Text Version
 
-1. Import breast ultrasound images in DICOM format (PNG format is available but not recommended) into 3D Slicer through `Add DICOM Data` module. (Sample Data can be downloaded and loaded by clicking `Download and Show Sample Data` button. Other download links: [SampleData (Google Drive)](https://drive.google.com/file/d/11eTC9-WLjop39a3g7HRrhIL-5gnQQ0Ay/view?usp=sharing), [SampleData (Zoho WorkDrive)](https://workdrive.zohopublic.com.cn/external/dabf8daab93df121bd0b8ff01203060e10a1de4542ece205bbbe23e4a379c816/download))
+1. Import breast ultrasound images in DICOM format (PNG format is available but not recommended) into 3D Slicer through `Add DICOM Data` module. (Sample Data can be downloaded and loaded by clicking `Download and Show Sample Data` button. Other download links: see in [Troubleshooting](#Troubleshooting) above)
 
 2. Jump to `Breast Ultrasound Analysis` module and select the ultrasound volume you just imported as the input of the AI prediction algorithm in this module.
 
