@@ -54,7 +54,7 @@ The AI prediction algorithm integrated in this module will be continuously updat
    - [NetWeight (Zoho WorkDrive)](https://workdrive.zohopublic.com.cn/external/fc5868a16789095cfab4d0011bb70578a26d7b3a59a30e4d41cf12fb82f02508/download)
    - [NetWeight (GitHub)](https://github.com/ZhyBrian/SlicerBreastUltrasoundAnalysis/releases/download/v0.0.1/net_weight.pth)
    
-   After downloading the net weight file (`net_weight.pth`), you need to move it manually to the correct path on your computer. First, locate the path of the `BUS_Diagnosis.py` file on your computer. The path to the `BUS_Diagnosis.py` file is usually something like this: `...\lib\Slicer-x.x\qt-scripted-modules`. Then, move the downloaded `net_weight.pth` file to the `...\lib\Slicer-x.x\qt-scripted-modules\Resources` directory. Once the net weight file is in the correct location, you should be able to run the `AI Automatically Segment and Diagnose` function without any issues.
+   After downloading the net weight file (`net_weight.pth`), you need to move it manually to the correct path on your computer. First, locate the path of the `BUS_Diagnosis.py` file on your computer. The path to the `BUS_Diagnosis.py` file is usually something like this: `...\BreastUltrasoundAnalysis\lib\Slicer-x.x\qt-scripted-modules`. Then, move the downloaded `net_weight.pth` file to the `...\BreastUltrasoundAnalysis\lib\Slicer-x.x\qt-scripted-modules\Resources` directory. Once the net weight file is in the correct location, you should be able to run the `AI Automatically Segment and Diagnose` function without any issues.
    
    
 
