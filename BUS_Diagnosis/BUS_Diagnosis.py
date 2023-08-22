@@ -730,7 +730,7 @@ class BUS_DiagnosisLogic(ScriptedLoadableModuleLogic):
     mask = Image.new('L', (temp, temp))
     mask.paste(img, (0, 0))
     if scale_method == 'ANTIALIAS':
-        mask = mask.resize(size, Image.ANTIALIAS) 
+        mask = mask.resize(size, Image.LANCZOS) 
     else:
         mask = mask.resize(size, Image.NEAREST) 
     return mask, img.size[0], img.size[1]
@@ -778,7 +778,7 @@ class BUS_DiagnosisLogic(ScriptedLoadableModuleLogic):
     result_img, result_cls = self.model_seg(input_img)
     result_img = transforms.ToPILImage()(result_img[0].float())
     result_img = result_img.crop(box=(0, 0, w/(max(w,h)/self.wh), h/(max(w,h)/self.wh)))  
-    result_img = result_img.resize((w, h), Image.ANTIALIAS)
+    result_img = result_img.resize((w, h), Image.LANCZOS)
     result_img = np.array(result_img)
     result_img[result_img >= 255*0.5] = 255
     result_img[result_img < 255*0.5] = 0
