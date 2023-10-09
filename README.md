@@ -20,8 +20,6 @@ This module is designed to help physicians diagnose intramammary lesions based o
 
 **Caution! The AI prediction results are not absolutely accurate, and are only for physicians' reference in diagnosis.**
 
-The AI prediction algorithm integrated in this module will be continuously updated in the future.
-
 
 
 ### Troubleshooting
@@ -42,17 +40,17 @@ The AI prediction algorithm integrated in this module will be continuously updat
 
 2. **If you encounter any issues when downloading the sample data automatically by clicking the `Download and Show Sample Data` button**, you may try downloading the sample data manually by using any of the following download links:
 
-   - [SampleData (Google Drive)](https://drive.google.com/file/d/11eTC9-WLjop39a3g7HRrhIL-5gnQQ0Ay/view?usp=sharing)
-   - [SampleData (Zoho WorkDrive)](https://workdrive.zohopublic.com.cn/external/dabf8daab93df121bd0b8ff01203060e10a1de4542ece205bbbe23e4a379c816/download)
+   - [SampleData (Google Drive)](https://drive.google.com/file/d/1ILKMUFD4wtgeFgvpiKPt5k0SQWVaJ2jG/view?usp=sharing)
+   - [SampleData (Zoho WorkDrive)](https://workdrive.zoho.com.cn/file/jy075c6237954580e4ccf98fca3fd55bacf66)
    
-   Import the downloaded sample data (`BenignSample6.nrrd`) to 3D Slicer by `File`->`Add Data`.
+   Import the downloaded sample data (`BenignSample.nrrd`) to 3D Slicer by `File`->`Add Data`.
    
 3. **If you have any trouble downloading the net weight file automatically when you first click the `AI Automatically Segment and Diagnose` button**, you can try downloading the net weight file manually by using any of the following download links: 
 
-   - [NetWeight (Google Drive)](https://drive.google.com/file/d/1c1dZo6lfaohfrtFFJZhODXNw1-gZr6_P/view?usp=share_link)
-   - [NetWeight (Zoho WorkDrive)](https://workdrive.zohopublic.com.cn/external/fc5868a16789095cfab4d0011bb70578a26d7b3a59a30e4d41cf12fb82f02508/download)
+   - [NetWeight (Google Drive)](https://drive.google.com/file/d/1lfYU8dPFIRQ4uWio_YlbG-31i35uttwA/view?usp=sharing)
+   - [NetWeight (Zoho WorkDrive)](https://workdrive.zoho.com.cn/file/jy075dd560e5a2fe7475b8a02ebc889aca769)
    
-   After downloading the net weight file (`net_weight.pth`), you need to move it manually to the correct path on your computer. First, locate the path of the `BUS_Diagnosis.py` file on your computer. The path to the `BUS_Diagnosis.py` file is usually something like this: `...\BreastUltrasoundAnalysis\lib\Slicer-x.x\qt-scripted-modules`. Then, move the downloaded `net_weight.pth` file to the `...\BreastUltrasoundAnalysis\lib\Slicer-x.x\qt-scripted-modules\Resources` directory. Once the net weight file is in the correct location, you should be able to run the `AI Automatically Segment and Diagnose` function without any issues.
+   After downloading the net weight file (`net_weight_base.pth`), you need to move it manually to the correct path on your computer. First, locate the path of the `BUS_Diagnosis.py` file on your computer. The path to the `BUS_Diagnosis.py` file is usually something like this: `...\BreastUltrasoundAnalysis\lib\Slicer-x.x\qt-scripted-modules`. Then, move the downloaded `net_weight.pth` file to the `...\BreastUltrasoundAnalysis\lib\Slicer-x.x\qt-scripted-modules\Resources` directory. Once the net weight file is in the correct location, you should be able to run the `AI Automatically Segment and Diagnose` function without any issues.
    
    
 
