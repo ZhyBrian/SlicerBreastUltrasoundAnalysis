@@ -196,6 +196,7 @@ class BUS_DiagnosisWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
     self.ui.pushButtonShowSeg.connect('clicked(bool)', self.onPushButtonShowSeg)
     self.ui.movetoOffsetButton.connect('clicked(bool)', self.onMovetoOffsetButton)
     self.ui.pushButtonSaveResults.connect('clicked(bool)', self.onPushButtonSaveResults)
+    self.ui.pushButtonSaveMultiResults.connect('clicked(bool)', self.onPushButtonSaveMultiResults)
     self.ui.pushButtonSetLB.connect('clicked(bool)', self.onPushButtonSetLB)
     self.ui.pushButtonSetRB.connect('clicked(bool)', self.onPushButtonSetRB)
     self.ui.pushButtonResetLB.connect('clicked(bool)', self.ResetLeftOffsetBound)
@@ -321,6 +322,7 @@ class BUS_DiagnosisWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
     self.UpdateShowHideButtonStatus()
     self.UpdateMovetoOffsetButtonStatus()
     self.UpdatePushButtonSaveResultsStatus()
+    self.UpdatePushButtonSaveMultiResultsStatus()
 
     # All the GUI updates are done
     self._updatingGUIFromParameterNode = False
@@ -434,6 +436,7 @@ class BUS_DiagnosisWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
       
       self.UpdateMovetoOffsetButtonStatus()
       self.UpdatePushButtonSaveResultsStatus()
+      self.UpdatePushButtonSaveMultiResultsStatus()
 
       self.progressDiag.close()
   
@@ -567,11 +570,68 @@ class BUS_DiagnosisWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
     else:
       qt.QMessageBox.information(slicer.util.mainWindow(), "Error", "The selected directory does not exist!     ")
       
+  
+  def onPushButtonSaveMultiResults(self):
+    directory = qt.QFileDialog.getExistingDirectory(slicer.util.mainWindow(), "Choose a Folder", "./")
+    if os.path.exists(directory):
+      self.processingDiag.show()
+      
+      inputVolumeNode = slicer.mrmlScene.GetNodeByID(self.ui.labelInputNode.text)
+      outputVolumeNode = slicer.mrmlScene.GetNodeByID(self.ui.labelOutputNode.text)
+      segmentNode = slicer.mrmlScene.GetNodeByID(self.ui.labelSegNode.text)
+      self.logic.currentSegmentID = segmentId = segmentNode.GetSegmentation().GetNthSegmentID(0)
+      segmentArray = slicer.util.arrayFromSegmentBinaryLabelmap(segmentNode, segmentId, inputVolumeNode)
+      # inputVolumeArray = slicer.util.arrayFromVolume(inputVolumeNode)
+      outputVolumeArray = slicer.util.arrayFromVolume(outputVolumeNode)
+      
+      # inputVolumeArray = np.transpose(inputVolumeArray, axes=(1, 2, 0))
+      # # h, w, c = inputVolumeArray.shape
+      # outputVolumeArray = np.transpose(outputVolumeArray, axes=(1, 2, 0))
+      # segmentArray = np.transpose(segmentArray, axes=(1, 2, 0))
+     
+      # shNode = slicer.mrmlScene.GetSubjectHierarchyNode()
+      # seriesItem = shNode.GetItemByDataNode(inputVolumeNode)
+      # studyItem = shNode.GetItemParent(seriesItem)
+      # patientItem = shNode.GetItemParent(studyItem)
+      patientName = self.ui.labelPatientName.text
+      
+      savePath = os.path.join(directory, f"Results_{patientName}_1")
+      self.saveCount += 1
+      if not os.path.exists(savePath):
+        os.makedirs(savePath)
+      else:
+        while os.path.exists(savePath):
+          savePath = savePath[:-1] + f"{int(savePath[-1]) + 1}"
+        os.makedirs(savePath)
+      
+      sitk_volume = sitk.GetImageFromArray(np.flip(np.flip(outputVolumeArray, axis=1), axis=2))
+      sitk_volume.SetOrigin(outputVolumeNode.GetOrigin())
+      sitk_volume.SetSpacing(outputVolumeNode.GetSpacing())
+      sitk.WriteImage(sitk.Cast(sitk_volume, sitk.sitkUInt8), os.path.join(savePath, f"Label_AIpredicted.mha"))
+      sitk_segment = sitk.GetImageFromArray(segmentArray * 255)
+      sitk_segment.SetOrigin(outputVolumeNode.GetOrigin())
+      sitk_segment.SetSpacing(outputVolumeNode.GetSpacing())
+      sitk.WriteImage(sitk.Cast(sitk_segment, sitk.sitkUInt8), os.path.join(savePath, f"Label_Revised.mha"))
+      
+      self.processingDiag.close()
+      # qt.QMessageBox.information(slicer.util.mainWindow(), "Information", "Diagnosis Results successfully saved!     ")
+    elif directory == "":
+      pass
+    else:
+      qt.QMessageBox.information(slicer.util.mainWindow(), "Error", "The selected directory does not exist!     ")
+  
+  
   def UpdatePushButtonSaveResultsStatus(self):
     if (self.logic.segmentationNode is not None) and self.ui.labelOffset.text != "":
       self.ui.pushButtonSaveResults.enabled = True
     else:
       self.ui.pushButtonSaveResults.enabled = False
+  
+  def UpdatePushButtonSaveMultiResultsStatus(self):
+    if (self.logic.segmentationNode is not None):
+      self.ui.pushButtonSaveMultiResults.enabled = True
+    else:
+      self.ui.pushButtonSaveMultiResults.enabled = False
   
   
   def UpdateClassificationResults(self, isSegmentMoreThanOneSlice):
@@ -862,7 +922,16 @@ class BUS_DiagnosisLogic(ScriptedLoadableModuleLogic):
     h, w = input_img.shape[0], input_img.shape[1]
     
     if self.isMultipleChannel:
-      result_img_temp = np.zeros((h, w, self.numberOfChannels))
+      if outputVolume.GetImageData() is None:
+        result_img_temp = np.zeros((h, w, self.numberOfChannels))
+        # print(result_img_temp.shape)
+      else:
+        result_img_temp = np.transpose(slicer.util.arrayFromVolume(outputVolume), axes=(1, 2, 0))
+        result_img_temp = np.flip(np.flip(result_img_temp, axis=0), axis=1)
+        # print(result_img_temp.shape)
+        # print(outputVolume.GetOrigin())
+        # print(outputVolume.GetSpacing())
+
       if len(input_img.shape) >= 3:
         assert self.segmentAll == True
         for i in range(leftBound, rightBound + 1):
