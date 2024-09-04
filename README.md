@@ -12,7 +12,7 @@ License: [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0)
 
 <img src="./Screenshots/SJTU.png" alt="BUS_Diagnosis"  />
 
-This extension is built upon our algorithm, which was published in the *IEEE Journal of Biomedical and Health Informatics*: 
+This extension is built upon our algorithm published in the *IEEE Journal of Biomedical and Health Informatics*: 
 
 [A Multi-Task Transformer with Local-Global Feature Interaction and Multiple Tumoral Region Guidance for Breast Cancer Diagnosis | IEEE Journals & Magazine | IEEE Xplore](https://ieeexplore.ieee.org/document/10663702/keywords#keywords)
 
