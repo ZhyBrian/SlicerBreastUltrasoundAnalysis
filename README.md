@@ -12,7 +12,7 @@ License: [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0)
 
 <img src="./Screenshots/SJTU.png" alt="BUS_Diagnosis"  />
 
-**This extension is built upon our [algorithm](#Network Architecture) published in the *IEEE Journal of Biomedical and Health Informatics***: 
+**This extension is built upon [our algorithm](#Architecture of our AI Algorithm) published in the *IEEE Journal of Biomedical and Health Informatics***: 
 
 [A Multi-Task Transformer with Local-Global Feature Interaction and Multiple Tumoral Region Guidance for Breast Cancer Diagnosis | IEEE Journals & Magazine | IEEE Xplore](https://ieeexplore.ieee.org/document/10663702/keywords#keywords)
 
@@ -98,7 +98,7 @@ This module is designed to help physicians diagnose intramammary lesions based o
 
 
 
-## Architecture of the AI Algorithm
+## Architecture of our AI Algorithm
 
 <img src="./net_architecture.png" alt="BUS_Diagnosis"  />
 
