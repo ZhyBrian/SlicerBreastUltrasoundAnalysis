@@ -12,30 +12,9 @@ License: [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0)
 
 <img src="./Screenshots/SJTU.png" alt="BUS_Diagnosis"  />
 
-This extension is built upon our algorithm published in the *IEEE Journal of Biomedical and Health Informatics*: 
+**This extension is built upon our [algorithm](#Network Architecture) published in the *IEEE Journal of Biomedical and Health Informatics***: 
 
 [A Multi-Task Transformer with Local-Global Feature Interaction and Multiple Tumoral Region Guidance for Breast Cancer Diagnosis | IEEE Journals & Magazine | IEEE Xplore](https://ieeexplore.ieee.org/document/10663702/keywords#keywords)
-
-### Architecture
-
-<img src="./net_architecture.png" alt="BUS_Diagnosis"  />
-
-### Citation
-
-If you find our work or this repository useful, please consider citing our work:
-
-~~~~~~
-@ARTICLE{10663702,
-  author={Zhang, Yi and Zeng, Bolun and Li, Jia and Zheng, Yuanyi and Chen, Xiaojun},
-  journal={IEEE Journal of Biomedical and Health Informatics}, 
-  title={A Multi-Task Transformer with Local-Global Feature Interaction and Multiple Tumoral Region Guidance for Breast Cancer Diagnosis}, 
-  year={2024},
-  volume={},
-  number={},
-  pages={1-14},
-  keywords={Breast cancer diagnosis;Transformer;Local-global interactions;Multi-task learning;Ultrasound imaging},
-  doi={10.1109/JBHI.2024.3454000}}
-~~~~~~
 
 
 
@@ -116,3 +95,26 @@ This module is designed to help physicians diagnose intramammary lesions based o
 - If you checked `Segment All Slice Simultaneously` before clicking `AI Automatically Segment and Diagnose` button, the AI algorithm will segment all slices (by default) in the red slice widget at the same time. You can also set the left and right offset bounds to segment a specific portion of the input ultrasound volume. Note that this process may take several minutes to compute, and the function of classifying breast nodules and saving diagnosis results is unavailable in this mode.
 
   ![segmentMultiple](./Screenshots/segmentMultiple.png)
+
+
+
+## Architecture of the AI Algorithm
+
+<img src="./net_architecture.png" alt="BUS_Diagnosis"  />
+
+## Citation
+
+If you find our work or this repository useful, please consider citing our work:
+
+~~~
+@ARTICLE{10663702,
+  author={Zhang, Yi and Zeng, Bolun and Li, Jia and Zheng, Yuanyi and Chen, Xiaojun},
+  journal={IEEE Journal of Biomedical and Health Informatics}, 
+  title={A Multi-Task Transformer with Local-Global Feature Interaction and Multiple Tumoral Region Guidance for Breast Cancer Diagnosis}, 
+  year={2024},
+  volume={},
+  number={},
+  pages={1-14},
+  keywords={Breast cancer diagnosis;Transformer;Local-global interactions;Multi-task learning;Ultrasound imaging},
+  doi={10.1109/JBHI.2024.3454000}}
+~~~
