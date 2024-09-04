@@ -20,7 +20,9 @@ This extension is built upon our algorithm published in the *IEEE Journal of Bio
 
 <img src="./net_architecture.png" alt="BUS_Diagnosis"  />
 
-### Cite
+### Citation
+
+If you find our work or this repository useful, please consider citing our work:
 
 ~~~~~~
 @ARTICLE{10663702,
